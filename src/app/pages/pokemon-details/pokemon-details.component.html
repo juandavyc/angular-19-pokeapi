@@ -1,0 +1,133 @@
+
+<div class="flex justify-start mb-3">
+  <a [routerLink]="['/pokemons']" mat-flat-button>
+    <mat-icon>arrow_back</mat-icon>
+    Volver
+  </a>
+</div>
+
+@if (pokemonResource.isLoading()) {
+  <div class="mat-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+@if (pokemonResource.error()) {
+  <p>error to load: {{pokemonResource.error()}}</p>
+  <button class="rounded bg-red-300" (click)="pokemonResource.reload()">reload</button>
+}
+
+@else{
+  @let pokemon = pokemonResource.value();
+  @if(pokemon != null || pokemon != undefined){
+    @let typePokemon =(pokemon.types | pokemonType) | slice:0:1;
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="col-span-1">
+        <mat-card appearance="raised" class="type-{{typePokemon}}">
+          <mat-card-header>
+            <div mat-card-avatar class="bg-cover border rounded-full p-1 bg-white">
+              <img mat-card-image [src]="pokemon.id | pokemonImage" alt="Photo cover">
+            </div>
+            <mat-card-title class="uppercase font-bold">{{pokemon.name}}</mat-card-title>
+            <mat-card-subtitle>#{{pokemon.id}}</mat-card-subtitle>
+          </mat-card-header>
+          <img mat-card-image [src]="pokemon.id | pokemonImage" alt="Photo" class="bg-white rounded m-1">
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item>
+                <mat-icon matListItemIcon>fitness_center</mat-icon>
+                <div class="flex justify-between">
+                  <span>Weight</span>
+                  <p class="font-bold">{{pokemon.weight}}</p>
+                </div>
+              </mat-list-item>
+              <mat-divider />
+              <mat-list-item>
+                <mat-icon matListItemIcon>arrow_upward</mat-icon>
+                <div class="flex justify-between">
+                  <span>Hight</span>
+                  <p class="font-bold">{{pokemon.height}}</p>
+                </div>
+              </mat-list-item>
+              <mat-divider />
+              <mat-list-item>
+                <mat-icon matListItemIcon>stairs</mat-icon>
+                <div class="flex justify-between">
+                  <span>Experience</span>
+                  <p class="font-bold">{{pokemon.base_experience}}</p>
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <div class="col-span-2">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" dynamicHeight class="rounded shadow">
+          <mat-tab label="Overview">
+            <div class="grid grid-cols-1 sm:grid-cols-2 p-3 gap-3">
+                <div class="col-span-2">
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-bold me-4">Type</h3>
+                      @for (type of pokemon.types | pokemonType; track $index) {
+                        <div class="badge type-{{type}}">{{ type }}</div>
+                      }
+                  </div>
+                </div>
+                <div class="col-span-1">
+                  <div class="flex">
+                    <h3 class="font-bold me-4">Stats</h3>
+                    <mat-list role="list">
+                      @for (type of pokemon.stats | pokemonStats; track $index) {
+                        <mat-list-item matBadgeOverlap="false"  matBadge="4">
+                          <div >{{type.name}}</div>
+                        </mat-list-item>
+                      }
+                    </mat-list>
+                  </div>
+                </div>
+                <div class="col-span-1">
+                  <div class="flex">
+                    <h3 class="font-bold me-4">Audio</h3>
+                    <mat-list>
+                      @for (sound of pokemon.cries | keyvalue; track $index) {
+                        <mat-list-item>
+                          <mat-icon matListItemIcon>music_note</mat-icon>
+                          <div matListItemTitle class="capitalize cursor-pointer" (click)="playAudio(sound.value)">
+                            {{sound.key}}
+                          </div>
+                          <div matListItemLine>audio/ogg</div>
+                        </mat-list-item>
+                        <mat-divider></mat-divider>
+                      }
+                      <mat-list-item class="h-24">
+                        <mat-icon matListItemIcon>volume_up</mat-icon>
+                        <app-audio #audioPlayer></app-audio>
+                      </mat-list-item>
+                    </mat-list>
+                    <div class="hidden">
+                      <audio controls class="w-[300px]" [volume]="0.3"  #audioPlayerTag>
+                        <source [src]="" type="audio/ogg" >
+                      </audio>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </mat-tab>
+          <mat-tab label="Sprites" class="p-3">
+            <div class="p-3">
+              <ng-template matTabContent>
+                <div class="flex flex-row justify-center items-center gap-3">
+                  <img [src]="pokemon.sprites.back_shiny" alt="back_shiny" class="w-24 h-24">
+                  <img [src]="pokemon.sprites.front_shiny	" alt="front_shiny" class="w-24 h-24">
+                  <img [src]="pokemon.sprites.back_default" alt="back_default" class="w-24 h-24">
+                  <img [src]="pokemon.sprites.front_default	" alt="back_default" class="w-24 h-24">
+                </div>
+              </ng-template>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+      </div>
+    </div>
+  }
+
+}

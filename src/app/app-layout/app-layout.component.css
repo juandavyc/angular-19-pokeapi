@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+mat-drawer{
+  @apply w-[250px] bg-gray-200 rounded-none px-3 ;
+}
+
+mat-toolbar{
+  @apply h-[50px] leading-[50px] border-b;
+}

@@ -1,0 +1,51 @@
+<div>
+  @let dataColumns = displayedColumns();
+
+  @if (displayedData.isLoading()) {
+    <div class="mat-spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+  @if (displayedData.error()) {
+    <p>error to load: {{displayedData.error()}}</p>
+    <button class="rounded bg-red-300" (click)="displayedData.reload()">reload</button>
+  }
+  @else{
+    <table mat-table [dataSource]="displayedData.value()!"  matSort matSort (matSortChange)="handleSortEvent($event)"  #tablePokemons>
+      @for (column of columns(); track column.id) {
+        <ng-container [matColumnDef]="column.id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear> {{column.label}} </th>
+          <td mat-cell *matCellDef="let element">
+            @if(column.id == "details"){
+              <a mat-button [routerLink]="['/pokemons/', element.name]">
+                <mat-icon>open_in_new</mat-icon>
+              </a>
+            }
+            @else if(column.id == "image"){
+            <img [src]="element.id | pokemonFront " alt="image-front" class="w-12 h-12">
+            }
+            @else{
+              {{element[column.id]}}
+            }
+          </td>
+        </ng-container>
+      }
+      <tr mat-header-row *matHeaderRowDef="dataColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: dataColumns;"></tr>
+    </table>
+    <mat-paginator
+      showFirstLastButtons
+      [pageSizeOptions]="[5, 10, 20]"
+      [pageSize]="pagination().size"
+      [length]="resultLength()"
+      [pageIndex]="pagination().page"
+      (page)="handlePageEvent($event)"
+    >
+  </mat-paginator>
+  }
+  <div class="flex flex-col gap-4 w-[350px]">
+
+
+  </div>
+
+</div>

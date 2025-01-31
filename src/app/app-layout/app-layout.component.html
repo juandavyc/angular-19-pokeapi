@@ -1,0 +1,31 @@
+<mat-drawer-container class="flex h-screen" hasBackdrop="false">
+  <mat-drawer mode="side" opened #drawer>
+    <div class="flex justify-center my-4">
+      <h1 class="text-2xl">failbook</h1>
+    </div>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/pokemons">pokemons</a>
+      <a mat-list-item routerLink="/pokemons/1">items</a>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content class="flex items-start">
+    <mat-toolbar class="flex justify-between">
+      <div>
+        <button mat-icon-button (click)="drawer.toggle()" class="text-sm h-5">
+          <mat-icon class="align-middle">menu</mat-icon>
+        </button>
+        <span class="text-base">Pokemons</span>
+      </div>
+      <div class="text-base">
+        <button mat-button [matMenuTriggerFor]="menu">Perfil</button>
+        <mat-menu #menu>
+          <button mat-menu-item> perfil</button>
+          <button mat-menu-item> salir</button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+    <div class="p-3">
+      <ng-content></ng-content>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

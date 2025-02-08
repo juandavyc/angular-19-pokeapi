@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, linkedSignal, s
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PokemonService } from './pokemon.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 
 
 /* card */
@@ -20,7 +20,7 @@ import { AudioComponent } from "./components/audio/audio.component";
 import { PokemonTypePipe } from "./pipes/pokemonType.pipe";
 import { MatChipsModule } from '@angular/material/chips';
 import { PokemonStatsPipe } from "./pipes/pokemonStats.pipe";
-import {MatBadgeModule} from '@angular/material/badge';
+import { MatBadgeModule } from '@angular/material/badge';
 @Component({
   selector: 'app-pokemon-details',
   imports: [
@@ -41,7 +41,7 @@ import {MatBadgeModule} from '@angular/material/badge';
     PokemonImagePipe,
     PokemonTypePipe,
     PokemonStatsPipe
-],
+  ],
   templateUrl: './pokemon-details.component.html',
   styleUrl: './pokemon-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,10 +52,12 @@ export default class PokemonDetailsComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
+  private _location = inject(Location);
+
   private pokemonName = linkedSignal({
-    source: ()=> this.route.snapshot.paramMap.get('name'),
-    computation:(source)=>{
-      if(!source){
+    source: () => this.route.snapshot.paramMap.get('name'),
+    computation: (source) => {
+      if (!source) {
         this.router.navigateByUrl("/pokemons");
       }
       return source;
@@ -72,6 +74,11 @@ export default class PokemonDetailsComponent {
     request: () => (this.pokemonName()!),
     loader: (loader) => this.pokemonService.getPokemon(loader.request)
   })
+
+  public goBack(): void {
+    this._location.back();
+  }
+
 
   // openDialog(url: string, title:string) {
   //   this.dialog.open(AudioComponent, {

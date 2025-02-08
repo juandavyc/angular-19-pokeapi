@@ -14,11 +14,11 @@ import { map, Observable, of, switchMap, tap } from 'rxjs';
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { Pokemon } from './pokeapi.response';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { PokemonsService } from './services/pokemons.service';
 import { PokemonFrontPipe } from "./pipes/pokemonFront.pipe";
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface Columns {
   id: string;
@@ -40,8 +40,9 @@ interface Columns {
     MatIconModule,
     RouterLink,
     CommonModule,
-    PokemonFrontPipe
-],
+    PokemonFrontPipe,
+    RouterModule,
+  ],
   templateUrl: './pokemons-page.component.html',
   styleUrl: './pokemons-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +51,14 @@ export default class PokemonsPageComponent {
 
 
   private pokemonService = inject(PokemonsService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+
+  // public pageNumber = signal<number>(
+  //   );
+  // public pageLimit = signal<number>(
+  //   this.parseNumber(this.route.snapshot.params['limitNumber'] || 5));
 
   public columns = signal<Columns[]>([
     { id: 'id', label: 'No.' },
@@ -59,7 +68,12 @@ export default class PokemonsPageComponent {
     { id: 'details', label: 'Details' }
   ]);
 
-  pagination = signal<{ page: number, size: number }>({ page: 0, size: 5 });
+  pagination = signal<{ page: number, limit: number }>(
+    {
+      page: (this.parseNumber(this.route.snapshot.params['pageNumber']) || 0),
+      limit: this.parseNumber(this.route.snapshot.params['limitNumber'] || 5)
+    }
+  );
 
   resultLength = signal<number>(0);
 
@@ -77,7 +91,7 @@ export default class PokemonsPageComponent {
               name: pokemon.name,
               url: pokemon.url,
               id,
-              image:id,
+              image: id,
               details: id,
             }
           }))
@@ -88,7 +102,8 @@ export default class PokemonsPageComponent {
 
 
   handlePageEvent(e: PageEvent) {
-    this.pagination.update(up => ({ page: e.pageIndex, size: e.pageSize }));
+    this.pagination.update(up => ({ page: Math.max(e.pageIndex, 0), limit: Math.max(e.pageSize, 5) }));
+    this.updateUrl();
   }
 
   handleSortEvent(e: Sort) {
@@ -100,6 +115,21 @@ export default class PokemonsPageComponent {
 
     this.displayedData.set([...sorted]);
 
+  }
+  private updateUrl() {
+    const { page, limit } = this.pagination();
+    this.router.navigate(
+      ['/pokemons/page', page, 'limit', limit],
+    );
+  }
+
+  private parseNumber(value: any): number {
+    const parsed = parseInt(value, 10);
+
+    if (isNaN(parsed) || parsed < 0) {
+      this.router.navigate(['/pokemons']);
+    }
+    return parsed;
   }
 
 }

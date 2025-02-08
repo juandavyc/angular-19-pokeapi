@@ -7,7 +7,7 @@ import { PokeApiResponse } from '../pokeapi.response';
 
 interface RequestParams {
   page: number;
-  size: number;
+  limit: number;
 }
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,8 @@ export class PokemonsService {
 
   // page: number, size: number
 
-  public getPokemons({ page, size }: RequestParams):Observable<PokeApiResponse> {
-    return this.http.get<PokeApiResponse>(`${this.URL}?limit=${size}&offset=${page * size}`)
+  public getPokemons({ page, limit }: RequestParams):Observable<PokeApiResponse> {
+    return this.http.get<PokeApiResponse>(`${this.URL}?limit=${limit}&offset=${(page) * limit}`)
       .pipe(
         delay(500),
       )

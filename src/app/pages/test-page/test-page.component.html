@@ -1,0 +1,13 @@
+<p>test-page works!</p>
+
+
+<p>Página actual {{pageNumber()}}</p>
+<p>Limite {{pageLimit()}}</p>
+<button (click)="previousPage()" class="bg-red-200 rounded p-3">Anterior página</button>
+<button (click)="nextPage()" class="bg-red-200 rounded p-3">Siguiente página</button>
+
+<select #selectLimit (change)="selectedLimit(selectLimit.value)"   >
+  <option value="5">5</option>
+  <option value="10">10</option>
+  <option value="15">15</option>
+</select>
